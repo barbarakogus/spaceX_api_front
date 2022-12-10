@@ -1,42 +1,77 @@
-import React from 'react';
-import './App.css';
-import { useQuery, gql } from '@apollo/client';
+import React from "react";
+import "./App.css";
+import { useQuery, gql } from "@apollo/client";
 
 const GET_LOCATIONS = gql`
-  query GetLocations {
-    locations {
+  query GetLaunches {
+    launches {
       id
-      name
-      description
-      photo
+      details
+      launch_date_local
+      launch_date_utc
+      launch_site {
+        site_name
+        site_name_long
+      }
+      launch_success
+      launch_year
+      mission_name
+      rocket {
+        rocket_name
+        rocket_type
+      }
+      links {
+        flickr_images
+        video_link
+        article_link
+      }
     }
   }
 `;
+interface LaunchSiteProps {
+  site_name: string;
+  site_name_long: string;
+}
 
-interface LocationProps {
-  id: string
-  name: string
-  description: string
-  photo: string
+interface RocketProps {
+  rocket_name: string;
+  rocket_type: string;
+}
+
+interface LinksProps {
+  flickr_images: string[];
+  video_link: string;
+  article_link: string;
+}
+interface LaunchesProps {
+  id: string;
+  details: string;
+  launch_date_local: Date;
+  launch_date_utc: Date;
+  launch_site: LaunchSiteProps;
+  launch_success: boolean;
+  launch_year: string;
+  mission_name: string;
+  rocket: RocketProps;
+  links: LinksProps
 }
 
 function DisplayLocations() {
-
   const { loading, error, data } = useQuery(GET_LOCATIONS);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
 
-  return data.locations.map(({ id, name, description, photo }: LocationProps) => (
-    <div key={id}>
-      <h3>{name}</h3>
-      <img width="400" height="250" alt="location-reference" src={`${photo}`} />
-      <br />
-      <b>About this location:</b>
-      <p>{description}</p>
-      <br />
-    </div>
-  ));
+  return data.launches.map(
+    ({ id, details, mission_name, launch_year }: LaunchesProps) => (
+      <div key={id}>
+        <h3>{details}</h3>
+        <p>{mission_name}</p>
+        <p>{launch_year}</p>
+        <br />
+      </div>
+    )
+  );
 }
 
 function App() {
