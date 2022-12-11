@@ -8,6 +8,8 @@ import {
   InMemoryCache,
   ApolloProvider,
 } from "@apollo/client";
+import store from "./store";
+import { Provider } from "react-redux";
 
 const client = new ApolloClient({
   uri: "https://api.spacex.land/graphql/",
@@ -20,7 +22,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <ApolloProvider client={client}>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </ApolloProvider>
 );
 

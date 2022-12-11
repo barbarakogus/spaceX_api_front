@@ -15,6 +15,7 @@ interface Links {
 }
 
 interface LaunchInformation {
+    id: string;
     details: string;
     launch_date_local: Date;
     launch_site: LaunchSite;

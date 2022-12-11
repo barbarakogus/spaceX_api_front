@@ -2,6 +2,9 @@ import { useQuery, gql } from "@apollo/client";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LaunchCard from "./LaunchCard";
+import { useAppSelector } from '../store';
+import { useDispatch } from "react-redux";
+import { setLaunchesList } from "../features/launchReducers";
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -68,14 +71,18 @@ interface LatestLaunchesProps {
 const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
     const [offset, setOffset] = useState(0);
-    const [launches, setLaunches] = useState<any>([]);
+    // const [launches, setLaunches] = useState<any>([]);
+
+    const state = useAppSelector(state => state.launches)
+
+    const dispatch = useDispatch();
 
     const { loading, error, data } = useQuery(GET_LAST_10_LAUNCHES, {
         variables: { offset },
     });
 
     useEffect(() => {
-        const newLaunches = [...launches];
+        const newLaunches = [...state.launchesList];
 
         if (!data) return;
         if (data && data.loading) return;
@@ -84,7 +91,7 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
             newLaunches.push(launch);
         });
 
-        setLaunches(newLaunches);
+        dispatch(setLaunchesList(newLaunches))
     }, [data]);
 
     if (error) return <p>Error : {error.message}</p>;
@@ -100,7 +107,7 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
         <StyledContainer>
             <StyledParagraph>Last 10 launches</StyledParagraph>
             <StyledDiv>
-                {launches.map(
+                {state.launchesList.map(
                     ({ id, mission_name, launch_date_local, launch_site }: Launch) => (
                         <LaunchCard
                             key={id}
