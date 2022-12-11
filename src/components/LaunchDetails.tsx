@@ -3,7 +3,7 @@ import { useQuery, gql } from "@apollo/client";
 import noImage from "../assets/no_image.jpg";
 import { useAppSelector } from '../store';
 import { useDispatch } from "react-redux";
-import { setFavoriteLaunches } from "../features/launchReducers";
+import { addFavoriteLaunch } from "../features/launchReducers";
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -167,7 +167,7 @@ const LaunchDetails = ({ id }: LaunchDetailsProps) => {
                             </StyledLinks>
                         </div>
                         <div>
-                            <StyledSavedBtn onClick={() => dispatch(setFavoriteLaunches(data.launch))}>Saved</StyledSavedBtn>
+                            <StyledSavedBtn onClick={() => dispatch(addFavoriteLaunch(data.launch))}>Saved</StyledSavedBtn>
                             <StyledDeleteBtn>Delete</StyledDeleteBtn>
                         </div>
                     </div>

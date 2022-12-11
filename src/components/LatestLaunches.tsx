@@ -71,7 +71,6 @@ interface LatestLaunchesProps {
 const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
     const [offset, setOffset] = useState(0);
-    // const [launches, setLaunches] = useState<any>([]);
 
     const state = useAppSelector(state => state.launches)
 

@@ -14,14 +14,10 @@ interface Links {
     article_link: string;
 }
 
-interface LaunchInformation {
-    id: string;
+interface LaunchInformation extends Launch {
     details: string;
-    launch_date_local: Date;
-    launch_site: LaunchSite;
     launch_success: boolean;
     launch_year: string;
-    mission_name: string;
     rocket: Rocket;
     links: Links;
 }

@@ -1,8 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-    launchesList: [] as any[],
-    favoriteLaunches: [] as any[],
+interface InitialStateProps {
+    launchesList: Launch[],
+    favoriteLaunches: Launch[]
+}
+
+const initialState: InitialStateProps = {
+    launchesList: [],
+    favoriteLaunches: [],
 };
 
 const productsSlice = createSlice({
@@ -12,11 +17,11 @@ const productsSlice = createSlice({
         setLaunchesList(state, action) {
             state.launchesList = action.payload;
         },
-        setFavoriteLaunches(state, action) {
+        addFavoriteLaunch(state, action) {
             state.favoriteLaunches.push(action.payload)
         }
     },
 });
 
-export const { setLaunchesList, setFavoriteLaunches } = productsSlice.actions;
+export const { setLaunchesList, addFavoriteLaunch } = productsSlice.actions;
 export default productsSlice.reducer;
