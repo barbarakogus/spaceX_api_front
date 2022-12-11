@@ -7,7 +7,6 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  gql,
 } from "@apollo/client";
 
 const client = new ApolloClient({
@@ -18,37 +17,6 @@ const client = new ApolloClient({
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-
-client
-  .query({
-    query: gql`
-      query GetLocations {
-        launches {
-          id
-          details
-          launch_date_local
-          launch_date_utc
-          launch_site {
-            site_name
-            site_name_long
-          }
-          launch_success
-          launch_year
-          mission_name
-          rocket {
-            rocket_name
-            rocket_type
-          }
-          links {
-            flickr_images
-            video_link
-            article_link
-          }
-        }
-      }
-    `,
-  })
-  .then((result) => console.log(result));
 
 root.render(
   <ApolloProvider client={client}>
