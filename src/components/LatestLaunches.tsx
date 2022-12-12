@@ -95,8 +95,6 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
   if (error) return <p>Error : {error.message}</p>;
 
-  console.log(state.launchesList)
-
   const loadMoreLaunches = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {

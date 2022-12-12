@@ -121,6 +121,8 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
     }
   };
 
+  console.log(state.favoriteLaunches)
+
   return (
     <StyledContainer>
       {data.launch && (

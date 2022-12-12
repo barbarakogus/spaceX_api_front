@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface InitialStateProps {
-    launchesList: Launch[];
-    favoriteLaunches: Launch[];
+    launchesList: Launch[]
+    favoriteLaunches: Launch[]
 }
 
 const initialState: InitialStateProps = {
     launchesList: [],
-    favoriteLaunches: [],
+    favoriteLaunches: [] = JSON.parse(localStorage.getItem('favorites')!) || [],
 };
 
 const productsSlice = createSlice({
@@ -23,6 +23,7 @@ const productsSlice = createSlice({
                 return;
             }
             state.favoriteLaunches.push(action.payload);
+            localStorage.setItem('favorites', JSON.stringify(state.favoriteLaunches));
         },
         removeLaunchFromListByIndex(state, action) {
             state.launchesList.splice(action.payload, 1)
