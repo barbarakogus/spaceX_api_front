@@ -19,6 +19,7 @@ time, mark, audio, video {
 :root  {
   --light-gray: #E0E0E0;
   --neutral-gray: #C0C0C0;
-  --neutral-coral: #3399FF;
-
+  --neutral-blue: #3399FF;
+  --background-delete-button: #cc0000;
+  --background-save-button: #009900; 
 }

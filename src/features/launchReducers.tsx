@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface InitialStateProps {
-    launchesList: Launch[]
-    favoriteLaunches: Launch[]
+    launchesList: Launch[];
+    favoriteLaunches: LaunchInformation[];
 }
 
 const initialState: InitialStateProps = {
     launchesList: [],
-    favoriteLaunches: [] = JSON.parse(localStorage.getItem('favorites')!) || [],
+    favoriteLaunches: ([] = JSON.parse(localStorage.getItem("favorites")!) || []),
 };
 
 const productsSlice = createSlice({
@@ -23,13 +23,24 @@ const productsSlice = createSlice({
                 return;
             }
             state.favoriteLaunches.push(action.payload);
-            localStorage.setItem('favorites', JSON.stringify(state.favoriteLaunches));
+            localStorage.setItem("favorites", JSON.stringify(state.favoriteLaunches));
+        },
+        removeFavoriteFromSavesList(state, action) {
+            const ids = state.favoriteLaunches.map((launch) => launch.id);
+            const launchToDelete = ids.indexOf(action.payload);
+            state.favoriteLaunches.splice(launchToDelete, 1);
+            localStorage.setItem("favorites", JSON.stringify(state.favoriteLaunches));
         },
         removeLaunchFromListByIndex(state, action) {
-            state.launchesList.splice(action.payload, 1)
+            state.launchesList.splice(action.payload, 1);
         },
     },
 });
 
-export const { setLaunchesList, addFavoriteLaunch, removeLaunchFromListByIndex } = productsSlice.actions;
+export const {
+    setLaunchesList,
+    addFavoriteLaunch,
+    removeFavoriteFromSavesList,
+    removeLaunchFromListByIndex,
+} = productsSlice.actions;
 export default productsSlice.reducer;

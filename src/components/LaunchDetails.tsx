@@ -12,10 +12,14 @@ const StyledContainer = styled.div`
   background-color: white;
   border: 1px solid var(--neutral-gray);
   border-radius: 8px;
-  height: 90%;
-  margin: auto 0;
-  width: 70%;
+  height: 74%; 
+  width: 100%;
 `;
+
+const StyledDetailsCard = styled.div`
+    box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+    margin: 1rem; 
+`
 
 const StyledImg = styled.img`
   width: 18rem;
@@ -53,12 +57,12 @@ const CommonStyleButton = css`
 `;
 
 const StyledSavedBtn = styled.a`
-  background-color: #009900;
+  background-color: var(--background-save-button);
   ${CommonStyleButton}
 `;
 
 const StyledDeleteBtn = styled.a`
-  background-color: #cc0000;
+  background-color: var(--background-delete-button);
   ${CommonStyleButton}
 `;
 
@@ -121,19 +125,10 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
     }
   };
 
-  console.log(state.favoriteLaunches)
-
   return (
     <StyledContainer>
       {data.launch && (
-        <div
-          style={{
-            boxShadow:
-              "inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3)",
-            width: "60%",
-            margin: "2rem auto",
-          }}
-        >
+        <StyledDetailsCard>
           <div style={{ display: "flex" }}>
             <StyledImg
               src={
@@ -199,7 +194,7 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
               </StyledDeleteBtn>
             </div>
           </div>
-        </div>
+        </StyledDetailsCard>
       )}
     </StyledContainer>
   );

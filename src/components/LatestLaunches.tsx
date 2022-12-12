@@ -35,7 +35,7 @@ const StyledDiv = styled.div`
 `;
 
 const StyledButton = styled.button`
-  background-color: var(--neutral-coral);
+  background-color: var(--neutral-blue);
   border: none;
   border-radius: 8px;
   color: white;
