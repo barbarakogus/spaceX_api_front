@@ -20,7 +20,7 @@ const Home = () => {
     return (
         <StyledMainContainer>
             <LatestLaunches onClick={(launch: string) => setLaunchSelected(launch)} launchSelected={launchSelected} />
-            <LaunchDetails id={launchSelected} />
+            <LaunchDetails id={launchSelected} setNextLaunch={(launch: string) => setLaunchSelected(launch)} />
         </StyledMainContainer>
     )
 }

@@ -64,67 +64,69 @@ const GET_LAST_10_LAUNCHES = gql`
 `;
 
 interface LatestLaunchesProps {
-    onClick: (launch: string) => void;
-    launchSelected: string
+  onClick: (launch: string) => void;
+  launchSelected: string
 }
 
 const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
-    const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(0);
 
-    const state = useAppSelector(state => state.launches)
+  const state = useAppSelector(state => state.launches)
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const { loading, error, data } = useQuery(GET_LAST_10_LAUNCHES, {
-        variables: { offset },
+  const { loading, error, data } = useQuery(GET_LAST_10_LAUNCHES, {
+    variables: { offset },
+  });
+
+  useEffect(() => {
+    const newLaunches = [...state.launchesList];
+
+    if (!data) return;
+    if (data && data.loading) return;
+
+    data.launchesPast.forEach((launch: Launch) => {
+      newLaunches.push(launch);
     });
 
-    useEffect(() => {
-        const newLaunches = [...state.launchesList];
+    dispatch(setLaunchesList(newLaunches))
+  }, [data]);
 
-        if (!data) return;
-        if (data && data.loading) return;
+  if (error) return <p>Error : {error.message}</p>;
 
-        data.launchesPast.forEach((launch: Launch) => {
-            newLaunches.push(launch);
-        });
+  console.log(state.launchesList)
 
-        dispatch(setLaunchesList(newLaunches))
-    }, [data]);
+  const loadMoreLaunches = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setOffset(offset + 10);
+  };
 
-    if (error) return <p>Error : {error.message}</p>;
-
-    const loadMoreLaunches = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-        e.preventDefault();
-        setOffset(offset + 10);
-    };
-
-    return (
-        <StyledContainer>
-            <StyledParagraph>Last 10 launches</StyledParagraph>
-            <StyledDiv>
-                {state.launchesList.map(
-                    ({ id, mission_name, launch_date_local, launch_site }: Launch) => (
-                        <LaunchCard
-                            key={id}
-                            id={id}
-                            missionName={mission_name}
-                            launchDateLocal={launch_date_local}
-                            launchSite={launch_site}
-                            onClick={onClick}
-                            selected={id === launchSelected}
-                        />
-                    )
-                )}
-            </StyledDiv>
-            <StyledButton onClick={(e) => loadMoreLaunches(e)}>
-                Load 10 more
-            </StyledButton>
-        </StyledContainer>
-    );
+  return (
+    <StyledContainer>
+      <StyledParagraph>Last 10 launches</StyledParagraph>
+      <StyledDiv>
+        {state.launchesList.map(
+          ({ id, mission_name, launch_date_local, launch_site }: Launch) => (
+            <LaunchCard
+              key={id}
+              id={id}
+              missionName={mission_name}
+              launchDateLocal={launch_date_local}
+              launchSite={launch_site}
+              onClick={onClick}
+              selected={id === launchSelected}
+            />
+          )
+        )}
+      </StyledDiv>
+      <StyledButton onClick={(e) => loadMoreLaunches(e)}>
+        Load 10 more
+      </StyledButton>
+    </StyledContainer>
+  );
 };
 
 export default LatestLaunches;
