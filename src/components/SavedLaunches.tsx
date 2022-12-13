@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 import { useAppSelector } from "../store";
 import { useDispatch } from "react-redux";
 import { removeFavoriteFromSavesList } from "../features/launchReducers";
+import { useQuery, gql } from "@apollo/client";
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -52,38 +53,51 @@ const StyledDeleteBtn = styled.button`
   ${CommonStyleButton}
 `;
 
+const GET_SAVED_LAUNCHES = gql`
+  query SavedLaunches {
+    savedLaunches {
+      id
+      mission_name
+    }
+  }
+`;
+
 interface SavedLaunchesProps {
-    onClick: (launchId: string) => void;
+  onClick: (launchId: string) => void;
 }
 
 const SavedLaunches = ({ onClick }: SavedLaunchesProps) => {
-    const state = useAppSelector((state) => state.launches);
+  const state = useAppSelector((state) => state.launches);
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    return (
-        <StyledContainer>
-            <h3 style={{ margin: "1rem 0 0 1rem" }}>Saved launches</h3>
-            <StyledDiv>
-                {state.favoriteLaunches.map(
-                    ({ id, mission_name }: LaunchInformation) => (
-                        <StyledList key={id}>
-                            <li style={{ listStyleType: "none" }}>
-                                <StyledButton onClick={() => onClick(id)}>
-                                    {mission_name}
-                                </StyledButton>
-                            </li>
-                            <StyledDeleteBtn
-                                onClick={() => dispatch(removeFavoriteFromSavesList(id))}
-                            >
-                                x
-                            </StyledDeleteBtn>
-                        </StyledList>
-                    )
-                )}
-            </StyledDiv>
-        </StyledContainer>
-    );
+  const { loading, error, data } = useQuery(GET_SAVED_LAUNCHES, {});
+
+  console.log(data)
+
+  return (
+    <StyledContainer>
+      <h3 style={{ margin: "1rem 0 0 1rem" }}>Saved launches</h3>
+      <StyledDiv>
+        {state.favoriteLaunches.map(
+          ({ id, mission_name }: LaunchInformation) => (
+            <StyledList key={id}>
+              <li style={{ listStyleType: "none" }}>
+                <StyledButton onClick={() => onClick(id)}>
+                  {mission_name}
+                </StyledButton>
+              </li>
+              <StyledDeleteBtn
+                onClick={() => dispatch(removeFavoriteFromSavesList(id))}
+              >
+                x
+              </StyledDeleteBtn>
+            </StyledList>
+          )
+        )}
+      </StyledDiv>
+    </StyledContainer>
+  );
 };
 
 export default SavedLaunches;

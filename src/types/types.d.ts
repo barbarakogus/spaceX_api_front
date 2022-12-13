@@ -28,3 +28,9 @@ interface Launch {
     launch_date_local: Date;
     launch_site: LaunchSite;
 }
+
+interface SavedLaunch {
+    id: ID;
+    mission_name: string
+}
+

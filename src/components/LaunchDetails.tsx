@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import noImage from "../assets/no_image.jpg";
 import { useAppSelector } from "../store";
 import { useDispatch } from "react-redux";
@@ -7,6 +7,7 @@ import {
   addFavoriteLaunch,
   removeLaunchFromListByIndex,
 } from "../features/launchReducers";
+import { useState } from "react";
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -92,15 +93,33 @@ const GET_LAUNCH_DETAILS = gql`
   }
 `;
 
+const SAVE_LAUNCH = gql`
+  mutation SaveLaunch($id: ID!, $missionName: String!) {
+        savedLaunches(id: $id, mission_name: $missionName) {
+            id,
+            mission_name
+        } 
+    }
+`;
+
 interface LaunchDetailsProps {
   id: string;
   setNextLaunch: (launch: string) => void;
 }
 
 const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
+
+  const [missionName, setMissionName] = useState("");
+
   const { loading, error, data } = useQuery(GET_LAUNCH_DETAILS, {
     variables: { id },
   });
+
+  const [saveLaunch] = useMutation(SAVE_LAUNCH, {
+    variables: { id, missionName }
+  });
+
+  console.log(data)
 
   const state = useAppSelector((state) => state.launches);
 
@@ -124,6 +143,15 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
       setNextLaunch(state.launchesList[indexToDelete + 1].id);
     }
   };
+
+  const save = () => {
+
+    setMissionName(data.launch.mission_name)
+
+    const savedLaunch = saveLaunch({ variables: { id, missionName } });
+
+    dispatch(addFavoriteLaunch(savedLaunch))
+  }
 
   return (
     <StyledContainer>
@@ -183,7 +211,7 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
             </div>
             <div>
               <StyledSavedBtn
-                onClick={() => dispatch(addFavoriteLaunch(data.launch))}
+                onClick={() => save()}
               >
                 Saved
               </StyledSavedBtn>
