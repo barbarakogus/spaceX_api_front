@@ -4,7 +4,7 @@ import noImage from "../assets/no_image.jpg";
 import { useAppSelector } from "../store";
 import { useDispatch } from "react-redux";
 import {
-  addFavoriteLaunch,
+  addSavedLaunch as addSavedLaunch,
   removeLaunchFromListByIndex,
 } from "../features/launchReducers";
 import { useState } from "react";
@@ -13,14 +13,15 @@ const StyledContainer = styled.div`
   background-color: white;
   border: 1px solid var(--neutral-gray);
   border-radius: 8px;
-  height: 74%; 
+  height: 74%;
   width: 100%;
 `;
 
 const StyledDetailsCard = styled.div`
-    box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
-    margin: 1rem; 
-`
+  box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255),
+    0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+  margin: 1rem;
+`;
 
 const StyledImg = styled.img`
   width: 18rem;
@@ -31,6 +32,13 @@ const StyledImg = styled.img`
 const StyledParagraph = styled.p`
   font-size: 18px;
   padding: 0.5rem;
+`;
+
+const StyledButtonContainer = styled.div`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0.5rem;
 `;
 
 const StyledLinks = styled.a`
@@ -95,20 +103,27 @@ const GET_LAUNCH_DETAILS = gql`
 
 const SAVE_LAUNCH = gql`
   mutation SaveLaunch($id: ID!, $missionName: String!) {
-        savedLaunches(id: $id, mission_name: $missionName) {
-            id,
-            mission_name
-        } 
+    savedLaunches(id: $id, mission_name: $missionName) {
+      id
+      mission_name
     }
+  }
 `;
 
+const GET_SAVED_LAUNCHES = gql`
+  query SavedLaunches {
+    savedLaunches {
+      id
+      mission_name
+    }
+  }
+`;
 interface LaunchDetailsProps {
   id: string;
   setNextLaunch: (launch: string) => void;
 }
 
 const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
-
   const [missionName, setMissionName] = useState("");
 
   const { loading, error, data } = useQuery(GET_LAUNCH_DETAILS, {
@@ -116,10 +131,9 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
   });
 
   const [saveLaunch] = useMutation(SAVE_LAUNCH, {
-    variables: { id, missionName }
+    variables: { id, missionName },
+    refetchQueries: [{ query: GET_SAVED_LAUNCHES }],
   });
-
-  console.log(data)
 
   const state = useAppSelector((state) => state.launches);
 
@@ -145,13 +159,9 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
   };
 
   const save = () => {
-
-    setMissionName(data.launch.mission_name)
-
-    const savedLaunch = saveLaunch({ variables: { id, missionName } });
-
-    dispatch(addFavoriteLaunch(savedLaunch))
-  }
+    saveLaunch({ variables: { id, missionName: data.launch.mission_name } });
+    dispatch(addSavedLaunch(data.launch));
+  };
 
   return (
     <StyledContainer>
@@ -190,38 +200,34 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
           <p style={{ padding: ".5rem", fontSize: "18px" }}>
             {data.launch.details}
           </p>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "1rem .5rem",
-            }}
-          >
+          <StyledButtonContainer>
             <div>
-              <StyledLinks
-                href={data.launch.links.article_link}
-                target="_blank"
-              >
-                Article link
-              </StyledLinks>
-              <StyledLinks href={data.launch.links.video_link} target="_blank">
-                Video link
-              </StyledLinks>
+              {data.launch.links.article_link && (
+                <StyledLinks
+                  href={data.launch.links.article_link}
+                  target="_blank"
+                >
+                  Article link
+                </StyledLinks>
+              )}
+              {data.launch.links.video_link && (
+                <StyledLinks
+                  href={data.launch.links.video_link}
+                  target="_blank"
+                >
+                  Video link
+                </StyledLinks>
+              )}
             </div>
             <div>
-              <StyledSavedBtn
-                onClick={() => save()}
-              >
-                Saved
-              </StyledSavedBtn>
+              <StyledSavedBtn onClick={() => save()}>Saved</StyledSavedBtn>
               <StyledDeleteBtn
                 onClick={() => deleteLaunch(data.launch.id, setNextLaunch)}
               >
                 Delete
               </StyledDeleteBtn>
             </div>
-          </div>
+          </StyledButtonContainer>
         </StyledDetailsCard>
       )}
     </StyledContainer>

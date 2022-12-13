@@ -7,7 +7,7 @@ interface InitialStateProps {
 
 const initialState: InitialStateProps = {
     launchesList: [],
-    favoriteLaunches: ([] = JSON.parse(localStorage.getItem("favorites")!) || []),
+    favoriteLaunches: [],
 };
 
 const productsSlice = createSlice({
@@ -17,9 +17,9 @@ const productsSlice = createSlice({
         setLaunchesList(state, action) {
             state.launchesList = action.payload;
         },
-        addFavoriteLaunch(state, action) {
+        addSavedLaunch(state, action) {
             const ids = state.favoriteLaunches.map((launch) => launch.id);
-            if (ids.indexOf(action.payload.id) != -1) {
+            if (ids.indexOf(action.payload.id) !== -1) {
                 return;
             }
             state.favoriteLaunches.push(action.payload);
@@ -39,7 +39,7 @@ const productsSlice = createSlice({
 
 export const {
     setLaunchesList,
-    addFavoriteLaunch,
+    addSavedLaunch,
     removeFavoriteFromSavesList,
     removeLaunchFromListByIndex,
 } = productsSlice.actions;

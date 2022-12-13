@@ -1,8 +1,7 @@
 import styled, { css } from "styled-components";
-import { useAppSelector } from "../store";
 import { useDispatch } from "react-redux";
 import { removeFavoriteFromSavesList } from "../features/launchReducers";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -62,24 +61,40 @@ const GET_SAVED_LAUNCHES = gql`
   }
 `;
 
+const DELETE_SAVED_LAUNCH = gql`
+  mutation DeleteSavedLaunch($id: ID!) {
+    deleteSavedLaunch(id: $id) {
+      id
+    }
+  }
+`;
 interface SavedLaunchesProps {
   onClick: (launchId: string) => void;
 }
 
 const SavedLaunches = ({ onClick }: SavedLaunchesProps) => {
-  const state = useAppSelector((state) => state.launches);
+
 
   const dispatch = useDispatch();
 
   const { loading, error, data } = useQuery(GET_SAVED_LAUNCHES, {});
 
-  console.log(data)
+
+  const [DeleteSavedLaunch] = useMutation(DELETE_SAVED_LAUNCH, {
+    variables: {},
+    refetchQueries: [{ query: GET_SAVED_LAUNCHES }],
+  });
+
+  const deleteLaunch = (id: string) => {
+    DeleteSavedLaunch({ variables: { id } });
+    dispatch(removeFavoriteFromSavesList(id))
+  }
 
   return (
     <StyledContainer>
       <h3 style={{ margin: "1rem 0 0 1rem" }}>Saved launches</h3>
       <StyledDiv>
-        {state.favoriteLaunches.map(
+        {data && data.savedLaunches && data.savedLaunches.map(
           ({ id, mission_name }: LaunchInformation) => (
             <StyledList key={id}>
               <li style={{ listStyleType: "none" }}>
@@ -88,7 +103,7 @@ const SavedLaunches = ({ onClick }: SavedLaunchesProps) => {
                 </StyledButton>
               </li>
               <StyledDeleteBtn
-                onClick={() => dispatch(removeFavoriteFromSavesList(id))}
+                onClick={() => deleteLaunch(id)}
               >
                 x
               </StyledDeleteBtn>
