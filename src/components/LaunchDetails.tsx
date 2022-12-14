@@ -1,13 +1,10 @@
 import styled, { css } from "styled-components";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import noImage from "../assets/no_image.jpg";
 import { useAppSelector } from "../store";
 import { useDispatch } from "react-redux";
-import {
-  addSavedLaunch as addSavedLaunch,
-  removeLaunchFromListByIndex,
-} from "../features/launchReducers";
-import { useState } from "react";
+import { removeLaunchFromListByIndex } from "../features/launchReducers";
+import { GET_LAUNCH_DETAILS, SAVE_LAUNCH, GET_SAVED_LAUNCHES } from "../graphQL/querys"
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -75,68 +72,23 @@ const StyledDeleteBtn = styled.a`
   ${CommonStyleButton}
 `;
 
-const GET_LAUNCH_DETAILS = gql`
-  query GetLaunchDetails($id: ID!) {
-    launch(id: $id) {
-      id
-      details
-      launch_date_local
-      launch_site {
-        site_name_long
-        site_name
-      }
-      launch_success
-      launch_year
-      links {
-        article_link
-        flickr_images
-        video_link
-      }
-      mission_name
-      rocket {
-        rocket_name
-        rocket_type
-      }
-    }
-  }
-`;
-
-const SAVE_LAUNCH = gql`
-  mutation SaveLaunch($id: ID!, $missionName: String!) {
-    savedLaunches(id: $id, mission_name: $missionName) {
-      id
-      mission_name
-    }
-  }
-`;
-
-const GET_SAVED_LAUNCHES = gql`
-  query SavedLaunches {
-    savedLaunches {
-      id
-      mission_name
-    }
-  }
-`;
 interface LaunchDetailsProps {
   id: string;
   setNextLaunch: (launch: string) => void;
 }
 
 const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
-  const [missionName, setMissionName] = useState("");
 
   const { loading, error, data } = useQuery(GET_LAUNCH_DETAILS, {
     variables: { id },
   });
 
   const [saveLaunch] = useMutation(SAVE_LAUNCH, {
-    variables: { id, missionName },
+    variables: {},
     refetchQueries: [{ query: GET_SAVED_LAUNCHES }],
   });
 
   const state = useAppSelector((state) => state.launches);
-
   const dispatch = useDispatch();
 
   if (loading) return <StyledContainer>Loading...</StyledContainer>;
@@ -160,7 +112,6 @@ const LaunchDetails = ({ id, setNextLaunch }: LaunchDetailsProps) => {
 
   const save = () => {
     saveLaunch({ variables: { id, missionName: data.launch.mission_name } });
-    dispatch(addSavedLaunch(data.launch));
   };
 
   return (

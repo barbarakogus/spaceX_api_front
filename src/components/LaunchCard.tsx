@@ -26,6 +26,10 @@ const StyledCardContainer = styled.div<StyledLaunchSelectedProps>`
 
 const StyledParagraph = styled.p`
   font-size: 14px;
+
+  &:nth-child(1) {
+    font-weight: bold;
+  }
 `;
 
 interface LaunchCardProps {

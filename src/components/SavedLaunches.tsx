@@ -1,7 +1,6 @@
 import styled, { css } from "styled-components";
-import { useDispatch } from "react-redux";
-import { removeFavoriteFromSavesList } from "../features/launchReducers";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_SAVED_LAUNCHES, DELETE_SAVED_LAUNCH } from "../graphQL/querys"
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -52,42 +51,24 @@ const StyledDeleteBtn = styled.button`
   ${CommonStyleButton}
 `;
 
-const GET_SAVED_LAUNCHES = gql`
-  query SavedLaunches {
-    savedLaunches {
-      id
-      mission_name
-    }
-  }
-`;
-
-const DELETE_SAVED_LAUNCH = gql`
-  mutation DeleteSavedLaunch($id: ID!) {
-    deleteSavedLaunch(id: $id) {
-      id
-    }
-  }
-`;
 interface SavedLaunchesProps {
   onClick: (launchId: string) => void;
 }
 
 const SavedLaunches = ({ onClick }: SavedLaunchesProps) => {
 
-
-  const dispatch = useDispatch();
-
   const { loading, error, data } = useQuery(GET_SAVED_LAUNCHES, {});
-
 
   const [DeleteSavedLaunch] = useMutation(DELETE_SAVED_LAUNCH, {
     variables: {},
     refetchQueries: [{ query: GET_SAVED_LAUNCHES }],
   });
 
+  if (loading) return <StyledContainer>Loading...</StyledContainer>;
+  if (error) return <StyledContainer>Error : {error.message}</StyledContainer>;
+
   const deleteLaunch = (id: string) => {
     DeleteSavedLaunch({ variables: { id } });
-    dispatch(removeFavoriteFromSavesList(id))
   }
 
   return (

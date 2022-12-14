@@ -1,10 +1,11 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LaunchCard from "./LaunchCard";
 import { useAppSelector } from '../store';
 import { useDispatch } from "react-redux";
 import { setLaunchesList } from "../features/launchReducers";
+import { GET_LAST_10_LAUNCHES } from "../graphQL/querys"
 
 const StyledContainer = styled.div`
   background-color: white;
@@ -14,7 +15,6 @@ const StyledContainer = styled.div`
   flex-direction: column;
   height: 90%;
   margin: auto 0;
-  
   width: 20%;
 `;
 
@@ -50,19 +50,6 @@ const StyledButton = styled.button`
   }
 `;
 
-const GET_LAST_10_LAUNCHES = gql`
-  query GetLast10Launches($offset: Int) {
-    launchesPast(limit: 10, offset: $offset) {
-      id
-      mission_name
-      launch_date_local
-      launch_site {
-        site_name
-      }
-    }
-  }
-`;
-
 interface LatestLaunchesProps {
   onClick: (launch: string) => void;
   launchSelected: string
@@ -72,7 +59,7 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
   const [offset, setOffset] = useState(0);
 
-  const state = useAppSelector(state => state.launches)
+  const state = useAppSelector(state => state.launches);
 
   const dispatch = useDispatch();
 
@@ -82,7 +69,6 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
 
   useEffect(() => {
     const newLaunches = [...state.launchesList];
-
     if (!data) return;
     if (data && data.loading) return;
 
@@ -94,10 +80,9 @@ const LatestLaunches = ({ onClick, launchSelected }: LatestLaunchesProps) => {
   }, [data]);
 
   if (error) return <p>Error : {error.message}</p>;
+  if (loading) return <StyledContainer>Loading...</StyledContainer>;
 
-  const loadMoreLaunches = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const loadMoreLaunches = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setOffset(offset + 10);
   };
